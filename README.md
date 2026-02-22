@@ -13,7 +13,7 @@ Scripts of note:
 - **ChangeNameScript.sh**
 - **SetAssetTagJamf.sh**
 - **CustomTriggerEvent4.sh**
-- **DetectArchforRosetta2.sh**
+- **InstallRosettaIfNeeded.sh**
 
 
 ---
