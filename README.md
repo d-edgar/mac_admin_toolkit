@@ -87,6 +87,18 @@ All EAs live in the `ExtensionAttributes/` folder. Each script queries the [`mda
 
 The scripts in the `Scripts/` folder are a collection of work developed, adapted, and refined for use with Jamf Pro. Some originated from community sources; the majority have been significantly modified to work properly in our environment.
 
+### How Jamf Script Parameters Work
+
+When you upload a script to **Jamf Pro → Settings → Computer Management → Scripts**, some scripts expect input values at runtime. Jamf reserves Parameters 1–3 internally (mount point, computer name, and username), so custom inputs start at **Parameter 4**.
+
+To configure these in Jamf Pro:
+
+1. Go to the script's **Options** tab.
+2. Under **Parameter Labels**, enter a descriptive label for each parameter the script uses (e.g. `Application Name (Do not put .app)` for Parameter 4).
+3. When you add the script to a **Policy**, Jamf will display those labels as text fields so the admin running the policy knows exactly what to fill in.
+
+Scripts in this repo that require parameters are marked below with a **Jamf Parameter Labels** section showing exactly what to enter on the Options tab.
+
 ### MDE Scripts
 
 #### mde_networkprotection_block.sh
@@ -115,6 +127,12 @@ Safely removes an application from `/Applications` with input validation and pat
 
 - `$4` — Application name (e.g. `Google Chrome`)
 
+**Jamf Parameter Labels (Options tab):**
+
+| Parameter | Label |
+|---|---|
+| Parameter 4 | `Application Name (Do not put .app)` |
+
 **What it does:**
 
 1. Validates the parameter and rejects input containing `/` or `..` to prevent deletion outside `/Applications`
@@ -134,6 +152,13 @@ Removes an application **only if** its installed version matches a specified tar
 
 - `$4` — Application name (e.g. `Google Chrome`)
 - `$5` — Target version to match (e.g. `120.0.6099.129`)
+
+**Jamf Parameter Labels (Options tab):**
+
+| Parameter | Label |
+|---|---|
+| Parameter 4 | `Application Name (Do not put .app)` |
+| Parameter 5 | `Target Version to Uninstall (e.g. 120.0.6099.129)` |
 
 **What it does:**
 
@@ -304,6 +329,12 @@ Triggers a Jamf custom event from within another policy, enabling policy chainin
 **Parameters:**
 
 - `$4` — Custom event name to trigger (e.g. `install_printer`)
+
+**Jamf Parameter Labels (Options tab):**
+
+| Parameter | Label |
+|---|---|
+| Parameter 4 | `Custom Event Name (e.g. install_printer)` |
 
 **What it does:** Runs `jamf policy -event {eventName}`. Useful for chaining policies together — for example, a prestage enrollment triggers a custom event that installs printers, which in turn triggers driver installation.
 
