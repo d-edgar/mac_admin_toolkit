@@ -7,6 +7,14 @@
 # Jamf Parameters:
 #   $4 - Application name (e.g. "Google Chrome") — used by pkill and to locate the .app bundle
 #   $5 - Version number to match (e.g. "120.0.6099.129") — compared against CFBundleShortVersionString
+#
+# Exit Codes:
+#   0 - Successfully uninstalled the application
+#   1 - Invalid or missing parameter
+#   2 - Application not found in /Applications
+#   3 - Could not determine installed version
+#   4 - Version mismatch (installed version does not match target)
+#   5 - Failed to remove the application
 
 applicationPath="$4"
 targetVersion="$5"
@@ -32,7 +40,7 @@ appBundle="/Applications/${applicationPath}.app"
 # Verify the app exists
 if [[ ! -d "${appBundle}" ]]; then
     echo "Application not found: ${appBundle}"
-    exit 0
+    exit 2
 fi
 
 # Read the installed version from the app's Info.plist
@@ -40,7 +48,7 @@ installedVersion=$(/usr/bin/defaults read "${appBundle}/Contents/Info" CFBundleS
 
 if [[ -z "${installedVersion}" ]]; then
     echo "Could not determine installed version for ${applicationPath}."
-    exit 1
+    exit 3
 fi
 
 echo "Installed version: ${installedVersion}"
@@ -49,7 +57,7 @@ echo "Target version:    ${targetVersion}"
 # Compare versions — only uninstall if they match
 if [[ "${installedVersion}" != "${targetVersion}" ]]; then
     echo "Version mismatch. Installed version (${installedVersion}) does not match target (${targetVersion}). Skipping uninstall."
-    exit 0
+    exit 4
 fi
 
 echo "Version match confirmed. Proceeding with uninstall."
@@ -61,6 +69,12 @@ pkill "${applicationPath}" || echo "Application not running, skipping kill."
 ## Removing Application
 echo "Removing application: ${appBundle}"
 rm -rf "${appBundle}"
+
+# Verify removal was successful
+if [[ -d "${appBundle}" ]]; then
+    echo "Failed to remove ${appBundle}."
+    exit 5
+fi
 
 echo "Successfully uninstalled ${applicationPath} version ${targetVersion}."
 exit 0
