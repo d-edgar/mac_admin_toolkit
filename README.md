@@ -51,6 +51,9 @@ All EAs live in the `ExtensionAttributes/` folder. Each script queries the [`mda
 | `mde_full_disk_access_status.sh` | MDE: Full Disk Access | String | `true`, `false`, `Not Installed`, `Unknown` |
 | `mde_health_issues.sh` | MDE: Health Issues | String | `None` or JSON array of issues, `Not Installed`, `Unknown` |
 | `macOSUpdateStatus.sh` | macOS Update Status | String | `Current: [ver] \| Available: [updates]` or `Current: [ver] \| Up to Date` |
+| `JamfConnectLoginInstalled.sh` | Jamf Connect Login | String | `Installed`, `Not Installed` |
+
+**Note on `JamfConnectLoginInstalled.sh`:** This checks specifically for **Jamf Connect Login** (the login window component), not Jamf Connect itself. Jamf Connect can be present on a machine without Jamf Connect Login being installed. The EA looks for the `JamfConnectLogin.bundle` under `/Library/Security/SecurityAgentPlugins/` and returns the version if found.
 
 **Note on `MDE_EDROnboarded.sh`:** This script uses three fallback methods to detect onboarding status for compatibility across different MDE versions — it checks the `is_onboarded` field first, then falls back to checking for a non-empty `org_id`, and finally looks for "onboard" in the EDR details output.
 
