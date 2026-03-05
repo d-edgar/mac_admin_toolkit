@@ -193,6 +193,23 @@ Uninstalls the Jamf Remote Assist tool and reinstalls it from the local JamfDaem
 
 ---
 
+#### RemoveSelfServiceDockItem.sh
+
+Removes the "Self Service" Dock item from all local user accounts. Created for upgrades where `Self Service.app` is being removed or relocated and the Dock shortcut would otherwise point to a missing app.
+
+**Parameters:** None
+
+**What it does:**
+
+1. Enumerates all local user accounts (skips system/service accounts)
+2. For each user, reads their Dock plist and searches `persistent-apps` for a "Self Service" entry using PlistBuddy
+3. Removes the matching entry if found
+4. If the user is currently logged in, restarts their Dock immediately so the change is visible right away; for other users, the change applies at their next login
+
+**Dependencies:** None — uses only built-in macOS tools (`dscl`, `PlistBuddy`, `killall`).
+
+---
+
 ### User Permissions
 
 #### LocalAdminRights.sh
