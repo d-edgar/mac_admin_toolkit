@@ -211,14 +211,24 @@ except:
 # Perform LDAP lookup for the current user via Classic API
 # Parses all attributes in a single python3 call for efficiency
 ldap_user_lookup() {
+    # URL-encode the lookup user (handles @ and other special chars)
+    local encoded_user
+    encoded_user=$( /usr/bin/python3 -c "import urllib.parse; print(urllib.parse.quote('${LDAP_LOOKUP_USER}'))" )
+
+    local lookup_url="${JAMF_PRO_URL}/JSSResource/ldapservers/id/${LDAP_SERVER_ID}/user/${encoded_user}"
+    log_message "LDAP API URL: ${lookup_url}"
+
     local response
     response=$( /usr/bin/curl \
         --silent \
         --request GET \
-        --url "${JAMF_PRO_URL}/JSSResource/ldapservers/id/${LDAP_SERVER_ID}/user/${LDAP_LOOKUP_USER}" \
+        --url "${lookup_url}" \
         --header "Authorization: Bearer ${API_TOKEN}" \
         --header "Accept: application/json" \
     )
+
+    # Log the raw response for debugging (truncated to 500 chars)
+    log_message "LDAP API response (raw): ${response:0:500}"
 
     # Parse all LDAP attributes in one python3 invocation
     local parsed
