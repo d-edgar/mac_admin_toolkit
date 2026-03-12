@@ -180,14 +180,19 @@ get_computer_id() {
     log_message "Serial number: ${serial_number}"
 
     # Use Jamf Pro API to get computer inventory by serial number
+    local lookup_serial_url="${JAMF_PRO_URL}/api/v1/computers-inventory?section=GENERAL&filter=hardware.serialNumber==%22${serial_number}%22"
+    log_message "DEBUG: Computer lookup URL: ${lookup_serial_url}"
+
     local response
     response=$( /usr/bin/curl \
         --silent \
         --request GET \
-        --url "${JAMF_PRO_URL}/api/v1/computers-inventory?section=GENERAL&filter=hardware.serialNumber==%22${serial_number}%22" \
+        --url "${lookup_serial_url}" \
         --header "Authorization: Bearer ${API_TOKEN}" \
         --header "Accept: application/json" \
     )
+
+    log_message "DEBUG: Computer lookup response: ${response:0:500}"
 
     COMPUTER_ID=$( echo "${response}" | /usr/bin/python3 -c "
 import sys, json
