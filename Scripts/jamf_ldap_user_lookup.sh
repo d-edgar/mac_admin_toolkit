@@ -15,6 +15,9 @@
 #   $5  - API Client ID
 #   $6  - API Client Secret
 #   $7  - LDAP Server ID (default: 1)
+#   $8  - Email domain suffix for LDAP lookup (e.g. @cnu.edu)
+#         If set, appended to the short username so the LDAP query
+#         uses "user@domain" instead of just "user".
 #
 # Auth:     Uses API Client credentials (client_id / client_secret).
 #           Create an API Role and API Client in Jamf Pro with these
@@ -42,6 +45,9 @@ CLIENT_SECRET="${6}"
 # LDAP Server ID in Jamf Pro (find under Settings > LDAP Servers; the number
 # at the end of the URL when you click your LDAP connection is the ID)
 LDAP_SERVER_ID="${7:-1}"
+
+# Email domain suffix (e.g. @cnu.edu) — appended to short username for LDAP lookup
+LDAP_DOMAIN_SUFFIX="${8}"
 
 # Logging
 LOG_FILE="/var/log/jamf_ldap_lookup.log"
@@ -144,6 +150,15 @@ get_current_user() {
     fi
 
     log_message "Current console user: ${CURRENT_USER}"
+
+    # Build the LDAP lookup name — append domain suffix if provided
+    if [[ -n "${LDAP_DOMAIN_SUFFIX}" ]]; then
+        LDAP_LOOKUP_USER="${CURRENT_USER}${LDAP_DOMAIN_SUFFIX}"
+    else
+        LDAP_LOOKUP_USER="${CURRENT_USER}"
+    fi
+
+    log_message "LDAP lookup user: ${LDAP_LOOKUP_USER}"
 }
 
 # Get the Jamf Pro computer ID using the serial number
@@ -194,7 +209,7 @@ ldap_user_lookup() {
     response=$( /usr/bin/curl \
         --silent \
         --request GET \
-        --url "${JAMF_PRO_URL}/JSSResource/ldapservers/id/${LDAP_SERVER_ID}/user/${CURRENT_USER}" \
+        --url "${JAMF_PRO_URL}/JSSResource/ldapservers/id/${LDAP_SERVER_ID}/user/${LDAP_LOOKUP_USER}" \
         --header "Authorization: Bearer ${API_TOKEN}" \
         --header "Accept: application/json" \
     )
@@ -229,11 +244,11 @@ except:
     LDAP_POSITION=$( sed -n '5p' <<< "${parsed}" )
 
     if [[ -z "${LDAP_EMAIL}" && -z "${LDAP_DEPARTMENT}" ]]; then
-        log_message "WARNING: LDAP lookup returned no usable data for user ${CURRENT_USER}."
+        log_message "WARNING: LDAP lookup returned no usable data for user ${LDAP_LOOKUP_USER}."
         exit 0
     fi
 
-    log_message "LDAP lookup succeeded for ${CURRENT_USER}."
+    log_message "LDAP lookup succeeded for ${LDAP_LOOKUP_USER}."
 }
 
 # Update the computer record's User and Location with LDAP data
