@@ -29,6 +29,12 @@
 #
 # Notes:    Uses Classic API for LDAP server lookup (no Jamf Pro API
 #           equivalent exists yet) and Jamf Pro API for computer inventory.
+#
+# Change Log:
+#   2026-03-12 - Added $8 (LDAP_DOMAIN_SUFFIX) parameter to support LDAP
+#                directories that require a full user@domain lookup name
+#                (e.g. david.edgar@cnu.edu) instead of the short macOS
+#                console username (e.g. david.edgar).
 ###############################################################################
 
 # =============================================================================
