@@ -194,16 +194,18 @@ get_computer_id() {
 
     log_message "DEBUG: Computer lookup response: ${response:0:500}"
 
-    COMPUTER_ID=$( echo "${response}" | /usr/bin/python3 -c "
+    COMPUTER_ID=$( printf '%s' "${response}" | /usr/bin/python3 -c "
 import sys, json
 try:
     data = json.load(sys.stdin)
     results = data.get('results', [])
     if results:
         print(results[0].get('id', ''))
-except:
-    pass
-" 2>/dev/null )
+except Exception as e:
+    print('PARSE_ERROR: ' + str(e), file=sys.stderr)
+" 2>>/var/log/jamf_ldap_lookup_debug.log )
+
+    log_message "DEBUG: Parsed COMPUTER_ID='${COMPUTER_ID}'"
 
     if [[ -z "${COMPUTER_ID}" ]]; then
         log_message "ERROR: Could not find computer ID for serial ${serial_number}."
