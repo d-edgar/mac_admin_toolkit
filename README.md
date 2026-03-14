@@ -461,6 +461,8 @@ Triggers a Jamf custom event from within another policy, enabling policy chainin
 
 #### jamf_ldap_user_lookup.sh
 
+> **Highlighted Script** — This is one of the more powerful utilities in the toolkit. If your environment uses **Jamf Connect** for authentication, you may have noticed that the User and Location fields in Jamf Pro inventory records are often empty or stale. Jamf Connect handles login but doesn't automatically populate department, email, phone, or position data in inventory. This script bridges that gap by leveraging the **Jamf Pro API's built-in LDAP integration** to look up the currently logged-in user, pull their directory attributes, and write them directly into the computer's inventory record — all without any additional infrastructure. Set it as a recurring policy at check-in and every Mac in your fleet stays up to date with accurate user data from your directory.
+
 Automatically populates a computer's User and Location fields in Jamf Pro by performing an LDAP lookup for the currently logged-in user. Designed to run as a recurring policy at check-in so that department, email, phone, position, and real name stay current without manual entry.
 
 **Parameters:**
@@ -469,6 +471,7 @@ Automatically populates a computer's User and Location fields in Jamf Pro by per
 - `$5` — API Client ID
 - `$6` — API Client Secret
 - `$7` — LDAP Server ID (default: `1`)
+- `$8` — Email domain suffix for LDAP lookup (e.g. `@cnu.edu`). If your LDAP directory requires a full `user@domain` format instead of just the short macOS username, set this parameter and it will be appended automatically.
 
 **Jamf Parameter Labels (Options tab):**
 
@@ -478,6 +481,7 @@ Automatically populates a computer's User and Location fields in Jamf Pro by per
 | Parameter 5 | `API Client ID` |
 | Parameter 6 | `API Client Secret` |
 | Parameter 7 | `LDAP Server ID (default: 1)` |
+| Parameter 8 | `Email Domain Suffix (e.g. @cnu.edu, optional)` |
 
 **Required API Client permissions:** Read Computers, Update Computers, Read LDAP Servers, Read Users. Create an API Role and API Client under Settings > API Roles and Clients.
 
@@ -485,9 +489,14 @@ Automatically populates a computer's User and Location fields in Jamf Pro by per
 
 1. Authenticates to the Jamf Pro API using OAuth client credentials
 2. Identifies the current console user and looks up the computer's Jamf Pro ID via serial number
-3. Queries the LDAP server through the Classic API to retrieve the user's email, department, real name, phone, and position
-4. Updates the computer's Location record in Jamf Pro with the LDAP data, using XML-escaped values to prevent injection from special characters
-5. Invalidates the API token on exit via a cleanup trap (covers all exit paths including errors)
+3. If an email domain suffix is configured, appends it to the short username so the LDAP query uses the full `user@domain` format
+4. Queries the LDAP server through the Classic API to retrieve the user's email, department, real name, phone, and position
+5. Updates the computer's Location record in Jamf Pro with the LDAP data, using XML-escaped values to prevent injection from special characters
+6. Invalidates the API token on exit via a cleanup trap (covers all exit paths including errors)
+
+**Why this matters for Jamf Connect environments:** Jamf Connect handles authentication at the macOS login window but does not sync directory attributes into Jamf Pro inventory. This means fields like department, email, and position can remain blank indefinitely — making Smart Groups, scoping, and reporting based on user data unreliable. This script solves that by running at every check-in and keeping those fields current from your LDAP directory, with zero manual effort.
+
+**Dependencies:** None beyond what ships with macOS — all JSON parsing uses `plutil` and `awk` (no Python or Xcode Command Line Tools required).
 
 **Logging:** All activity is logged to `/var/log/jamf_ldap_lookup.log`. Sensitive PII (email, phone, etc.) is not written to the log — only success/failure status.
 
