@@ -6,8 +6,27 @@ Use these to build **Smart Groups** and **Advanced Searches** in Jamf Pro that d
 
 ---
 
+## Related Projects
+
+**Other tools by this author:**
+
+- [**ABMate**](https://github.com/d-edgar/ABMate) — A native macOS client for Apple Business Manager and Apple School Manager APIs. Built in Swift for managing device assignments, enrollment profiles, and ABM/ASM workflows without a browser.
+- [**macOSAdminRemediation**](https://github.com/d-edgar/macOSAdminRemediation) — A Swift-based macOS tool for remediating unauthorized local admin privileges, deployable via MDM with compliance reporting. Pairs naturally with the `LocalAdminRights.sh` script in this repo — one grants temporary elevation, the other enforces compliance.
+
+**Community resources:**
+
+- [**awesome-macadmin-tools**](https://github.com/smashism/awesome-macadmin-tools) — The definitive curated list of Mac admin tools, covering MDM, packaging, security, and more.
+- [**Mac Admins Open Source**](https://github.com/macadmins) — Community GitHub org with tools for nudging OS updates, FileVault key escrow, onboarding splash screens, and a Jamf Pro API client library.
+- [**palantir/jamf-pro-scripts**](https://github.com/palantir/jamf-pro-scripts) — Palantir's collection of Jamf Pro extension attributes and management scripts.
+- [**swiftDialog**](https://github.com/swiftDialog/swiftDialog) — An open-source admin dialog utility for macOS written in SwiftUI, widely used for custom user-facing prompts in deployment workflows.
+- [**SOFA**](https://sofa.macadmins.io) — A machine-readable feed for Apple software updates, useful for tracking patch status across your fleet.
+- [**jamf/jamfconnect**](https://github.com/jamf/jamfconnect) — Jamf's official Connect resources, including example configuration profiles for supported identity providers.
+
+---
+
 ## Table of Contents
 
+- [Related Projects](#related-projects)
 - [MDE Extension Attributes](#mde-extension-attributes)
   - [Why These Exist](#why-these-exist)
   - [EA Reference](#ea-reference)
