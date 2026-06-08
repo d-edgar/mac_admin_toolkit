@@ -387,6 +387,67 @@ Deletes local user accounts (and their home directories) that have been inactive
 
 ---
 
+#### jamf_delete_users_whitelist.sh
+
+Deletes **every** local user account **except** those on a whitelist, then deep-scrubs all artifacts each deleted user leaves behind so that a returning person gets a clean, first-login experience. This is the inverse of `jamf_delete_inactive_users.sh`: instead of targeting users by inactivity, it keeps a known set and removes everyone else. Ideal for shared, lab, kiosk, or loaner Macs that should only ever retain a handful of known accounts.
+
+**Parameters:**
+
+- `$4` — **Whitelist** *(Required in practice)* — Comma-separated usernames to protect from deletion, in addition to the built-in system accounts and the current console user (e.g. `labadmin,kiosk,itadmin`). If left blank, only built-ins and the console user are protected — the script warns and pauses 5 seconds before continuing.
+- `$5` — **Dry Run** *(Optional, default: `false`)* — Set to `true` to log what *would* be deleted and scrubbed without making any changes. Always run dry first.
+- `$6` — **Protect Admins** *(Optional, default: `false`)* — Set to `true` to also skip any account in the local `admin` group, even if not whitelisted. Extra safety net.
+- `$7` — **Min UID** *(Optional, default: `501`)* — Only consider accounts with a UID at or above this value, protecting hidden/service/system accounts.
+
+**Jamf Parameter Labels (Options tab):**
+
+| Parameter | Label |
+|---|---|
+| Parameter 4 | `Whitelist Users to KEEP (comma-separated)` |
+| Parameter 5 | `Dry Run: true or false (default: false)` |
+| Parameter 6 | `Protect Admin Group Users: true or false (default: false)` |
+| Parameter 7 | `Minimum UID to Consider (default: 501)` |
+
+**Parameter Examples (copy-paste into Jamf policy fields):**
+
+| Parameter | Example Value | What It Does |
+|---|---|---|
+| Parameter 4 | `labadmin,kiosk` | Keeps `labadmin` and `kiosk`; deletes all other non-system users |
+| Parameter 4 | `itadmin` | Keeps a single admin account |
+| Parameter 5 | `true` | **Dry run** — reports the would-delete list and scrub plan, makes no changes. Always start here. |
+| Parameter 5 | `false` | **Live mode** — actually deletes and scrubs |
+| Parameter 6 | `true` | Also spares any member of the local `admin` group |
+| Parameter 7 | `501` | Standard floor — ignores hidden/service accounts (default) |
+
+**Built-in whitelist (never deleted, regardless of parameters):** `root`, `administrator`, `admin`, `Guest`, `Shared`, `daemon`, `nobody`, `_mbsetupuser`, every account whose name starts with `_`, and the currently logged-in console user.
+
+**Deep scrub performed for each deleted user:**
+
+1. Removes FileVault access (`fdesetup remove`)
+2. Strips all secondary group memberships (admin, staff, etc.)
+3. Deletes the account and home directory (`sysadminctl -deleteUser`, with a `dscl` fallback)
+4. Removes the home directory and `dslocal` plist if they survive
+5. Purges any `/Users/Deleted Users/<user>` archive bundle
+6. Clears auto-login (`com.apple.loginwindow`) and `/etc/kcpassword` if the deleted user was the auto-login account
+7. Removes managed/MDM per-user preference leftovers in `/Library`
+
+**Verification pass:** after each deletion, the script re-checks every location — directory-services record, home directory, `dslocal` plist, Deleted Users archive, group memberships, and FileVault access — and logs `VERIFY OK` for a clean slate or `VERIFY FAIL` with the specific artifact left behind.
+
+**Logging:** all actions go to `/var/log/jamf_user_whitelist_cleanup.log`.
+
+**Exit codes:** 0 = success (or clean dry run), 1 = invalid parameters or one or more deletions left residual artifacts.
+
+**WARNING:** This script is destructive and erases home directories permanently. Because the selection model is "delete everyone not on the list," an empty or wrong whitelist can remove far more than intended. Always run with Parameter 5 set to `true` first and review the log before going live.
+
+**Recommended deployment:**
+
+1. Upload the script to Jamf Pro and fill in the parameter labels above
+2. Create a policy scoped to your target machines
+3. Set Parameter 4 to your keep-list and Parameter 5 to `true` (dry run), then run against a test machine
+4. Review `/var/log/jamf_user_whitelist_cleanup.log` and confirm the would-delete list is exactly what you expect
+5. Once verified, set Parameter 5 to `false` and deploy
+
+---
+
 ### System Configuration
 
 #### ChangeNameScript.sh
