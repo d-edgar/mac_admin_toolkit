@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Appearance</key>
+	<dict>
+		<key>AlternateBranding</key>
+		<false/>
+		<!-- You can use a pkg to load these exact named pngs to the shared folder so you have branding -->
+		<key>MenubarIcon</key>
+		<string>/Users/Shared/lightmode_square.png</string>
+		<key>MenubarIconDark</key>
+		<string>/Users/Shared/darkmode_square.png</string>
+		<key>ShowWelcomeWindow</key>
+		<false/>
+	</dict>
+	<key>CustomMenuItems</key>
+	<dict>
+		<key>gethelp</key>
+		<string>Create ITS Ticket</string>
+		<key>getsoftware</key>
+		<string>Self Service</string>
+	</dict>
+	<key>HiddenMenuItems</key>
+	<array>
+		<string>about</string>
+		<string>actions</string>
+		<string>home</string>
+		<string>preferences</string>
+		<string>shares</string>
+		<string>quitjamfconnect</string>
+	</array>
+	<!-- change these settings accordingly -->
+	<key>IdPSettings</key>
+	<dict>
+		<key>ChangePasswordURL</key>
+		<string>CHANGEPASSWORDURL.COM</string>
+		<key>OIDCAdminAttribute</key>
+		<string>roles</string>
+		<key>Provider</key>
+		<string>Azure</string>
+		<key>ROPGID</key>
+		<string>ROPGID VALUE</string>
+		<key>ResetPasswordURL</key>
+		<string>RESETPASSWORDURL.COM</string>
+		<key>TenantID</key>
+		<string>TENANTID</string>
+	</dict>
+	<key>Keychain</key>
+	<dict>
+		<key>InternetItems</key>
+		<dict/>
+	</dict>
+	<key>PasswordPolicies</key>
+	<dict>
+		<key>CheckOnNetworkChange</key>
+		<true/>
+		<key>NetworkCheck</key>
+		<integer>60</integer>
+		<key>PasswordChangeWorkflow</key>
+		<string>Web</string>
+		<key>PasswordSyncBlockList</key>
+		<!-- add local accounts that will not sync passwords -->
+		<array>
+			<string>Default_Administrator</string>
+		</array>
+		<key>SyncPasswordsMessage</key>
+		<string>Your local macOS Login and Email passwords do not match.</string>
+	</dict>
+	<key>SignIn</key>
+	<dict>
+		<key>AutoAuthenticate</key>
+		<true/>
+		<key>AutoOpenAppAtLogin</key>
+		<true/>
+		<key>RequireSignIn</key>
+		<true/>
+		<key>SignInLogo</key>
+		<string>/Users/Shared/itslogo.png</string>
+		<key>UsernameLabel</key>
+		<string>Email</string>
+		<key>WindowTitle</key>
+		<string>Sign in with your Email</string>
+	</dict>
+	<key>TemporaryUserPermissions</key>
+	<dict>
+		<key>TemporaryUserPromotion</key>
+		<true/>
+		<key>URLCommandLineElevation</key>
+		<false/>
+		<key>UserPromotionBiometrics</key>
+		<false/>
+		<key>UserPromotionChoices</key>
+		<!-- these are the choices you can give people to elevate -->
+		<array>
+			<string>Driver install</string>
+			<string>Software Install</string>
+			<string>Software Update</string>
+			<string>macOS Patching</string>
+			<string>macOS configuration</string>
+		</array>
+		<key>UserPromotionDuration</key>
+		<integer>0</integer>
+		<key>UserPromotionReason</key>
+		<true/>
+		<!-- This would be if you want certain people to have access based on roles -->
+		<key>UserPromotionRole</key>
+		<array>
+			<dict>
+				<!-- duration of time as admin -->
+				<key>Duration</key>
+				<integer>30</integer>
+				<key>Name</key>
+				<!-- This is the Azure group you created for local admins -->
+				<string>macOSAdmin</string>
+			</dict>
+		</array>
+		<key>UserPromotionTimer</key>
+		<true/>
+		<key>VerifyUserPromotion</key>
+		<true/>
+	</dict>
+	<key>UserHelp</key>
+	<dict>
+		<key>HelpOptions</key>
+		<string>HELP.URL.COM</string>
+		<key>HelpType</key>
+		<string>URL</string>
+		<key>SoftwarePath</key>
+		<!-- Must be changed to the correct self service app you are running -->
+		<string>/Applications/Self Service+.app</string>
+	</dict>
+	<key>WebBrowser</key>
+	<dict>
+		<key>BrowserSelection</key>
+		<string>Safari</string>
+		<key>LaunchBrowser</key>
+		<false/>
+	</dict>
+</dict>
+</plist>
