@@ -28,7 +28,7 @@ as_user() {
 # Finder is supplied automatically by the Dock; do not add a duplicate.
 apps=(
   '/System/Applications/Apps.app'
-  '/Applications/Safari.app'
+  '/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app'
   '/System/Applications/Messages.app'
   '/System/Applications/Calendar.app'
   '/System/Applications/App Store.app'
